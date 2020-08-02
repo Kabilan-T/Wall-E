@@ -83,7 +83,7 @@ class Bingo ():
         AutoChart = update.message.text
         if AutoChart == 'Yes':  
             self.Player = self.GernerateChart()
-            return self.ChartDisplay(update,context)
+            return self.AskMode(update,context)
         elif AutoChart == 'No': 
             self.Player=[]
             self.Row = 0
@@ -106,25 +106,30 @@ class Bingo ():
                 self.Col=0
                 self.Row+=1
         if self.Row==5 :
-            return self.ChartDisplay(update,context)
+            return self.AskMode(update,context)
         else:
             self.StrikeValue(self.numboard,element)
             EntryChart = [[str(i) if i!=0 else 'X' for i in j] for j in self.numboard]
             update.message.reply_text('Enter number for '+str(self.Row+1)+','+str(self.Col+1)+' position:',reply_markup=ReplyKeyboardMarkup(EntryChart, one_time_keyboard=True, resize_keyboard=True))
             return MANUALCHART
-        
-    def ChartDisplay(self, update, context):
-        '''Display the chart to the user'''
-        chart =""
-        for i in self.Player : 
-            for j in i: 
-                if j > 9 : chart+='-'+str(j)+'-\t\t\t\t'
-                else : chart+='-0'+str(j)+'-\t\t\t\t'
-            chart+='\n'
-        context.bot.send_message(update.effective_chat.id,chart)
+
+    def AskMode(self, update, context):
+        '''Ask the user for first or second player'''
+        self.ChartDisplay(update, context, self.Player)
         update.message.reply_text('First player or Second player ',reply_markup=ReplyKeyboardMarkup([['First', 'Second']], one_time_keyboard=True))
         return MODE
 
+    def ChartDisplay(self, update, context, Matrix):
+        '''Display the chart to the user'''
+        chart =""
+        for i in Matrix : 
+            for j in i: 
+                if j > 9 : chart+='-'+str(j)+'-\t\t\t\t'
+                elif j==0 : chart+='xxxx'+'\t\t\t\t'
+                else : chart+='-0'+str(j)+'-\t\t\t\t'
+            chart+='\n'
+        context.bot.send_message(update.effective_chat.id,chart)
+        
     def SelectMode(self, update, context):
         '''Player mode selection'''
         selectedmode = update.message.text
@@ -141,6 +146,10 @@ class Bingo ():
         self.StrikeValue(self.Computer,t)
         self.StrikeValue(self.Player,t)
         if self.Score(update, context) in ["WIN","LOSE"]:
+            context.bot.send_message(update.effective_chat.id,update.effective_chat.first_name+" Chart :")
+            self.ChartDisplay(update, context, self.Player)
+            context.bot.send_message(update.effective_chat.id,self.name+" Chart :")
+            self.ChartDisplay(update, context, self.Computer)
             return self.Exit(update, context)
         else:
             self.UserKeyboard(update, context)
@@ -152,6 +161,10 @@ class Bingo ():
         self.StrikeValue(self.Computer,t)
         self.StrikeValue(self.Player,t)
         if self.Score(update, context) in ["WIN","LOSE"]:
+            context.bot.send_message(update.effective_chat.id,update.effective_chat.first_name+" Chart :")
+            self.ChartDisplay(update, context, self.Player)
+            context.bot.send_message(update.effective_chat.id,self.name+" Chart :")
+            self.ChartDisplay(update, context, self.Computer)
             return self.Exit(update, context)
         else: 
             next = self.ComMove(update, context)
@@ -196,7 +209,7 @@ class Bingo ():
             del self.sub
         except:
             pass
-        update.message.reply_text('Bye! I hope we can play again.',reply_markup=ReplyKeyboardRemove())
+        update.message.reply_text('Bye! send /Bingo to play again.',reply_markup=ReplyKeyboardRemove())
         return ConversationHandler.END
 
     def GernerateChart(self):
