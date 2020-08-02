@@ -74,7 +74,7 @@ class Bingo ():
         logging.info(update.effective_chat.first_name+" have started the Bingo game")
         self.score="Nil"
         context.bot.send_message(chat_id=update.effective_chat.id,text="Welcome to BINGO\n if you want to exit anytime send /exit")
-        update.message.reply_text('Do you want auto Generated the chart?\nY or N',reply_markup=ReplyKeyboardMarkup([['Yes', 'No']], one_time_keyboard=True))
+        update.message.reply_text('Do you want auto Generated the chart?\nYes or No',reply_markup=ReplyKeyboardMarkup([['Yes', 'No']], one_time_keyboard=True))
         return CHART
 
     def CreateChart(self, update, context):
