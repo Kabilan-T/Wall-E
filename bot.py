@@ -1,3 +1,4 @@
+import yaml
 import logging
 from random import sample, shuffle, randint, choice
 from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove)
@@ -392,6 +393,7 @@ class Guess_number ():
         update.message.reply_text('Bye! send /guessnumber to play again.',reply_markup=ReplyKeyboardRemove())
         return ConversationHandler.END
 
-BotToken = '1355378842:AAEORuP1CJG4TntxGGUDP4lMEXj9-_NkwTc'
-BotName = "Heisenberg"
-Heisenberg=MyBot(token= BotToken,name= BotName)
+with open("config/bot.yaml", "r")  as stream:
+    config= yaml.safe_load(stream)
+
+Heisenberg=MyBot(token= config['TelegramBot']['Token'],name= config['TelegramBot']['Name'])
